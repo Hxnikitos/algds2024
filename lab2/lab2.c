@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <stdbool.h>
 #include <locale.h>
 
 struct TreeAVLNode {
@@ -216,7 +217,15 @@ struct TreeAVLNode* Delete(struct TreeAVLNode* Node, int k) {
     return Balance(Node);
 }
 
-
+bool isSame(struct TreeAVLNode* root1, struct TreeAVLNode* root2) {
+    if (root1 == NULL && root2 == NULL) {
+        return true;
+    }
+    if (root1 != NULL && root2 != NULL) {
+        return (root1->key == root2->key && isSame(root1->left, root2->left) && isSame(root1->right, root2->right));
+    }
+    return false;
+}
 
 
 void PrintAVLTree(struct TreeAVLNode* root, int height) {
@@ -261,10 +270,31 @@ void PrintAVLTree(struct TreeAVLNode* root, int height) {
 
 void TestInsert()
 {
+
+    struct TreeAVLNode* NodeCheck = NewNodeCreating(10);
+    NodeCheck->left = NewNodeCreating(2);
+    NodeCheck->left->parent = NodeCheck;
+    NodeCheck->right = NewNodeCreating(11);
+    NodeCheck->right->parent = NodeCheck;
+    NodeCheck->left->right = NewNodeCreating(6);
+    NodeCheck->left->right->parent = NodeCheck->left;
+    //PrintAVLTree(NodeCheck, 5);
+
+    struct TreeAVLNode* NodeCheck8 = NewNodeCreating(10);
+    NodeCheck8->left = NewNodeCreating(6);
+    NodeCheck8->left->parent = NodeCheck8;
+    NodeCheck8->right = NewNodeCreating(11);
+    NodeCheck8->right->parent = NodeCheck8;
+    NodeCheck8->left->right = NewNodeCreating(8);
+    NodeCheck8->left->right->parent = NodeCheck8->left;
+    NodeCheck8->left->left = NewNodeCreating(2);
+    NodeCheck8->left->left->parent = NodeCheck8->left;
+    //PrintAVLTree(NodeCheck8, 5);
+
     printf("\n\nTests\n\n");
     printf("Тест на добавление\nНаше изначальное дерево\n\n");
     struct TreeAVLNode* Node = NewNodeCreating(10);
-    Node->left = NewNodeCreating(5);
+    Node->left = NewNodeCreating(2);
     Node->left->parent = Node;
     Node->right = NewNodeCreating(11);
     Node->right->parent = Node;
@@ -272,39 +302,82 @@ void TestInsert()
     printf("Добавим элемент 6\n\n");
     InsertNode(Node, 6);
     PrintAVLTree(Node, 5);
-    printf("Правильно добавился\n\n");
+    if (isSame(Node, NodeCheck) == true)
+    {
+        printf("Правильно добавился\n\n");
+    }
+    else
+    {
+        printf("Неправильно добавился\n\n");
+    }
+    
     printf("Добавим элемент 8\n\n");
     InsertNode(Node, 8);
     PrintAVLTree(Node, 5);
-    printf("Правильно добавился с малым левым поворотом\n\n");
-
+    if (isSame(Node, NodeCheck8) == true)
+    {
+        printf("Правильно добавился\n\n");
+    }
+    else
+    {
+        printf("Неправильно добавился\n\n");
+    }
+    
     free(Node);
+    free(NodeCheck);
+    free(NodeCheck8);
 }
 
 void TestRemove()
 {
+    struct TreeAVLNode* NodeCheck5 = NewNodeCreating(10);
+    NodeCheck5->left = NewNodeCreating(6);
+    NodeCheck5->left->parent = NodeCheck5;
+    NodeCheck5->right = NewNodeCreating(11);
+    NodeCheck5->right->parent = NodeCheck5;
+    NodeCheck5->right->right = NewNodeCreating(12);
+    NodeCheck5->right->right->parent = NodeCheck5->right;;
+    NodeCheck5->left->left = NewNodeCreating(2);
+    NodeCheck5->left->left->parent = NodeCheck5->left;
+    NodeCheck5->left->left->left = NewNodeCreating(1);
+    NodeCheck5->left->left->left->parent = NodeCheck5->left->left;
+    NodeCheck5->left->left->right = NewNodeCreating(3);
+    NodeCheck5->left->left->right->parent = NodeCheck5->left->left;
+
     printf("Тест на удаление\nНаше изначальное дерево\n\n");
     struct TreeAVLNode* Node = NewNodeCreating(10);
     Node->left = NewNodeCreating(5);
     Node->left->parent = Node;
     Node->right = NewNodeCreating(11);
     Node->right->parent = Node;
-    PrintAVLTree(Node, 5);
+    
     InsertNode(Node, 3);    
     InsertNode(Node, 6);    
     InsertNode(Node, 12);
     InsertNode(Node, 2);
     InsertNode(Node, 1);
+    PrintAVLTree(Node, 5);
     printf("Удалим элемент 5\n\n");
     Delete(Node, 5);
     PrintAVLTree(Node, 5);
+    if (isSame(Node, NodeCheck5) == true)
+    {
+        printf("Правильно добавился\n\n");
+    }
+    else
+    {
+        printf("Неправильно добавился\n\n");
+    }
     free(Node);
+    free(NodeCheck5);
 }
 
 int main() {
     setlocale(LC_CTYPE, "Rus");
     printf("Хаяйнен Никита 5030102/20003 2 вар\n\n");
+
     TestInsert();
     TestRemove();
+
     return 0;
 }
